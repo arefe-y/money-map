@@ -1,16 +1,9 @@
-import { UUID } from 'crypto';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity } from 'typeorm';
+
+import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity('users')
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @Column()
   name: string;
 
@@ -30,7 +23,4 @@ export class User {
 
   @Column()
   password: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

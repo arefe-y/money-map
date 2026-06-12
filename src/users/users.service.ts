@@ -1,21 +1,14 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { FindOneOptions, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UserRepository } from './users.repository';
+import { BaseException } from 'src/common/exceptions/base.exception';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const duplicateUser = await this.userRepository.findOne({
@@ -23,27 +16,29 @@ export class UsersService {
     });
 
     if (duplicateUser) {
-      throw new BadRequestException('User with this phone number exist !');
+      throw new BaseException(
+        'User with this phone number already exists',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create({
+    return this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
     });
-    return await this.userRepository.save(user);
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
+    return await this.userRepository.findAll();
   }
 
-  async findOneById(id: string): Promise<User> {
+  async findById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
     });
 
     if (!user) {
-      throw new NotFoundException('User not found !');
+      throw new NotFoundException('User');
     }
     return user;
   }
@@ -51,20 +46,20 @@ export class UsersService {
   async findOne(filter: Partial<Record<keyof User, any>>) {
     const user = await this.userRepository.findOne({ where: filter });
     if (!user) {
-      throw new NotFoundException('User not found !');
+      throw new NotFoundException('User');
     }
     return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOneById(id);
-    Object.assign(user, updateUserDto);
-    return await this.userRepository.save(user);
+    return await this.userRepository.update(id, updateUserDto);
   }
 
-  async remove(id: string): Promise<string> {
-    const user = await this.findOneById(id);
-    await this.userRepository.remove(user);
-    return 'User deleted !';
+  async remove(id: string): Promise<{ message: string }> {
+    await this.findById(id);
+    await this.userRepository.delete(id);
+    return {
+      message: 'User deleted successfully',
+    };
   }
 }
