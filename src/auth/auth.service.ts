@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   private async generateTokens(user: User) {
-    const { password, createdAt, ...safeUserData } = user;
+    const { password, ...safeUserData } = user;
 
     const payload = {
       sub: user.id,
