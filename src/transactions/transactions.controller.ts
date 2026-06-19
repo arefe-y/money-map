@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,7 +15,8 @@ import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
-import { UpdateTransactionsDto } from './update-transaction.dto';
+import { FindQueryDto } from 'src/common/interfaces/query-params.interface';
+import { UpdateTransactionsDto } from './dtos/update-transaction.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('transactions')
@@ -32,8 +34,8 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  findAll(@Param('id') id: string, @Query() queryDto: FindQueryDto) {
+    return this.transactionsService.findAll(id, queryDto);
   }
 
   @Get(':id')
@@ -49,8 +51,8 @@ export class TransactionsController {
     return this.transactionsService.update(id, updateTransactionsDto);
   }
 
-  @Delete("id")
-  delete(@Param('id') id:string){
-    return this.transactionsService.delete(id)
+  @Delete('id')
+  delete(@Param('id') id: string) {
+    return this.transactionsService.delete(id);
   }
 }

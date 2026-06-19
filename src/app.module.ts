@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     UsersModule,
     CategoriesModule,
     TransactionsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
