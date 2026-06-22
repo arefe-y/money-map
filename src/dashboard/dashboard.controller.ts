@@ -28,4 +28,15 @@ export class DashboardController {
   ) {
     return this.dashboardService.getMonthlyReport(activeUser.id, year);
   }
+
+  @Get('category-breakdown')
+  getCategoryBreakDown(
+    @ActiveUser() activeUser: ActiveUserData,
+    @Query() queryDto: FindQueryDto,
+  ) {
+    return this.dashboardService.getCategoryBreadDownReport(
+      activeUser.id,
+      queryDto,
+    );
+  }
 }

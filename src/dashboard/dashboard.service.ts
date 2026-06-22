@@ -91,4 +91,34 @@ export class DashboardService {
 
     return result;
   }
+
+  async getCategoryBreadDownReport(userId: string, queryDto: FindQueryDto) {
+    const userFilters = [].concat(queryDto.where ?? []);
+    const findExpensQuery: FindQueryDto = {
+      ...queryDto,
+      where: [...userFilters, `type::eq::${TransactionType.EXPENSE}`],
+      relations: 'category',
+    };
+    const transactions = await this.transactionsService.findAll(
+      userId,
+      findExpensQuery,
+    );
+
+    const categoryMap: Record<string, number> = {};
+
+    for (const t of transactions) {
+      const categoryName = t.category?.name ?? 'UnCategorized';
+
+      categoryMap[categoryName] =
+        (categoryMap[categoryName] ?? 0) + Number(t.amount);
+    }
+    const result = [];
+    for (const name in categoryMap) {
+      result.push({
+        name,
+        totalExpense: categoryMap[name],
+      });
+    }
+    return result;
+  }
 }
