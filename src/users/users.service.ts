@@ -5,6 +5,11 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './users.repository';
 import { BaseException } from 'src/common/exceptions/base.exception';
+import {
+  FindQueryDto,
+  PaginatedResponse,
+} from 'src/common/interfaces/query-params.interface';
+import buildFindQuery from 'src/common/utils/build-find-query.util';
 
 @Injectable()
 export class UsersService {
@@ -28,8 +33,17 @@ export class UsersService {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.findAll();
+  async findAll(queryDto: FindQueryDto): Promise<PaginatedResponse<User>> {
+    const query = buildFindQuery<User>(queryDto, {
+      filters: ['email', 'name'],
+      sort: ['email', 'name', 'createdAt'],
+      relations: [],
+      select: [],
+    });
+
+    const [data, total] = await this.userRepository.findAll(query);
+
+    return { total, data };
   }
 
   async findById(id: string): Promise<User> {

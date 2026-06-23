@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -13,6 +14,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth-guard';
+import { FindQueryDto } from 'src/common/interfaces/query-params.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -27,8 +29,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() queryDto: FindQueryDto) {
+    return this.usersService.findAll(queryDto);
   }
 
   @Get(':id')

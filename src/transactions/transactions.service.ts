@@ -4,7 +4,10 @@ import { Transaction } from './entities/transactions.entity';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 import { NotFoundException } from 'src/common/exceptions/not-found.exception';
-import { FindQueryDto } from 'src/common/interfaces/query-params.interface';
+import {
+  FindQueryDto,
+  PaginatedResponse,
+} from 'src/common/interfaces/query-params.interface';
 import buildFindQuery from 'src/common/utils/build-find-query.util';
 import { FindOptionsWhere } from 'typeorm';
 import { UpdateTransactionsDto } from './dtos/update-transaction.dto';
@@ -29,7 +32,7 @@ export class TransactionsService {
   async findAll(
     userId: string,
     queryDto: FindQueryDto,
-  ): Promise<Transaction[]> {
+  ): Promise<PaginatedResponse<Transaction>> {
     const query = buildFindQuery<Transaction>(queryDto, {
       filters: [
         'date',
@@ -48,10 +51,12 @@ export class TransactionsService {
       Array.isArray(query.where) ? query.where : [query.where ?? {}]
     ) as FindOptionsWhere<Transaction>[];
 
-    return this.transactionRepository.findAll({
+    const [data, total] = await this.transactionRepository.findAll({
       ...query,
       where: wheres.map((w) => ({ ...w, user: { id: userId } })),
     });
+
+    return { total, data };
   }
 
   async findById(id: string): Promise<Transaction> {

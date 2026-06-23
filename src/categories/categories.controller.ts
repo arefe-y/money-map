@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
@@ -15,6 +16,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { FindQueryDto } from 'src/common/interfaces/query-params.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
@@ -32,8 +34,11 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(
+    @ActiveUser() activeUser: ActiveUserData,
+    @Query() queryDto: FindQueryDto,
+  ) {
+    return this.categoryService.findAll(activeUser.id, queryDto);
   }
 
   @Get(':id')

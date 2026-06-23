@@ -13,8 +13,8 @@ export abstract class BaseRepository<T extends { id: string }> {
     return this.repository.save(entity);
   }
 
-  async findAll(options?: FindManyOptions<T>): Promise<T[]> {
-    return this.repository.find(options);
+  async findAll(options?: FindManyOptions<T>): Promise<[T[], number]> {
+    return this.repository.findAndCount(options);
   }
 
   async findOne(options: FindOneOptions<T>): Promise<T | null> {

@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   FindOptionsOrder,
@@ -16,9 +17,9 @@ export interface IValidParams {
 }
 
 export class FindQueryDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [String] })
   @IsOptional()
-  @IsArray()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   where?: string | string[];
 
   @ApiPropertyOptional()
@@ -39,12 +40,12 @@ export class FindQueryDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
-  skip?: number;
+  skip?: number = 0;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
-  take?: number;
+  take?: number = 10;
 }
 export interface FindQuery<T> {
   where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
@@ -53,4 +54,9 @@ export interface FindQuery<T> {
   select?: FindOptionsSelect<T> | FindOptionsSelectByString<T>;
   skip?: number;
   take?: number;
+}
+
+export interface PaginatedResponse<T> {
+  total: number;
+  data: T[];
 }

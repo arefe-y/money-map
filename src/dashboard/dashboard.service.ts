@@ -8,7 +8,7 @@ export class DashboardService {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   async summary(userId: string, queryDto: FindQueryDto) {
-    const transactions = await this.transactionsService.findAll(
+    const { data: transactions } = await this.transactionsService.findAll(
       userId,
       queryDto,
     );
@@ -31,10 +31,13 @@ export class DashboardService {
   async getMonthlyReport(userId: string, year: number) {
     const targetYear = year ? Number(year) : new Date().getFullYear();
 
-    const transactions = await this.transactionsService.findAll(userId, {
-      where: `spentDate::between::${targetYear}-01-01, ${targetYear}-12-31`,
-      relations: 'category',
-    });
+    const { data: transactions } = await this.transactionsService.findAll(
+      userId,
+      {
+        where: `spentDate::between::${targetYear}-01-01, ${targetYear}-12-31`,
+        relations: 'category',
+      },
+    );
 
     const months = [];
 
@@ -79,7 +82,7 @@ export class DashboardService {
 
       for (const name in categories) {
         const { income, expense } = categories[name];
-        categoryList.push({ name, income, expense, balance: income - expense });
+        categoryList.push({ name, income, expense });
       }
 
       result.push({
@@ -99,7 +102,7 @@ export class DashboardService {
       where: [...userFilters, `type::eq::${TransactionType.EXPENSE}`],
       relations: 'category',
     };
-    const transactions = await this.transactionsService.findAll(
+    const { data: transactions } = await this.transactionsService.findAll(
       userId,
       findExpensQuery,
     );

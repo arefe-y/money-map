@@ -34,8 +34,11 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll(@Param('id') id: string, @Query() queryDto: FindQueryDto) {
-    return this.transactionsService.findAll(id, queryDto);
+  findAll(
+    @ActiveUser() activeUser: ActiveUserData,
+    @Query() queryDto: FindQueryDto,
+  ) {
+    return this.transactionsService.findAll(activeUser.id, queryDto);
   }
 
   @Get(':id')
