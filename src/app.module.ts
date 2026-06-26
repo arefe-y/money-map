@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { BudgetModule } from './budget/budget.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     CategoriesModule,
     TransactionsModule,
     DashboardModule,
+    BudgetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
