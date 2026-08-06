@@ -11,17 +11,29 @@ import {
 import buildFindQuery from 'src/common/utils/build-find-query.util';
 import { FindOptionsWhere } from 'typeorm';
 import { UpdateTransactionsDto } from './dtos/update-transaction.dto';
+import { TagsService } from 'src/tags/tags.service';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+    private readonly tagService: TagsService,
+  ) {}
 
   async create(
     createTransactionDto: CreateTransactionDto,
     activeUser: ActiveUserData,
   ): Promise<Transaction> {
+    const tags = createTransactionDto.tagIds?.length
+      ? await this.tagService.findByIds(
+          activeUser.id,
+          createTransactionDto.tagIds,
+        )
+      : [];
     return await this.transactionRepository.create({
       ...createTransactionDto,
+      tags,
       user: activeUser,
       category: {
         id: createTransactionDto.categoryId,
@@ -43,7 +55,7 @@ export class TransactionsService {
         'spentDate',
       ],
       sort: ['date', 'amount', 'createdAt'],
-      relations: ['category'],
+      relations: ['category','tags'],
       select: [],
     });
 
@@ -71,9 +83,13 @@ export class TransactionsService {
   }
 
   async update(
+    userId: string,
     id: string,
     updateTransactionsDto: UpdateTransactionsDto,
   ): Promise<Transaction> {
+    const tags = updateTransactionsDto.tagIds?.length
+      ? await this.tagService.findByIds(userId, updateTransactionsDto.tagIds)
+      : undefined;
     return await this.transactionRepository.update(
       id,
       updateTransactionsDto.categoryId

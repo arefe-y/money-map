@@ -4,9 +4,10 @@ import { Transaction } from './entities/transactions.entity';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 import { TransactionRepository } from './transactions.repository';
+import { TagModule } from 'src/tags/tags.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction])],
+  imports: [TypeOrmModule.forFeature([Transaction]), TagModule],
   controllers: [TransactionsController],
   providers: [TransactionsService, TransactionRepository],
   exports: [TransactionsService],

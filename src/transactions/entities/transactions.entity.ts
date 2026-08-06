@@ -1,8 +1,9 @@
 import { Category } from 'src/categories/entities/categories.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { TransactionType } from 'src/common/enums/transactions.enum';
+import { Tag } from 'src/tags/entities/tag.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 
 @Entity('transactions')
 export class Transaction extends BaseEntity {
@@ -25,4 +26,11 @@ export class Transaction extends BaseEntity {
 
   @ManyToOne(() => User)
   user: User;
+
+  @ManyToMany(() => Tag, (tag) => tag.transactions)
+  @JoinTable()
+  tags: Tag[];
+
+  @Column({ nullable: true })
+  note: string;
 }

@@ -48,10 +48,15 @@ export class TransactionsController {
 
   @Patch(':id')
   update(
+    @ActiveUser() activeUser: ActiveUserData,
     @Param('id') id: string,
     @Body() updateTransactionsDto: UpdateTransactionsDto,
   ) {
-    return this.transactionsService.update(id, updateTransactionsDto);
+    return this.transactionsService.update(
+      activeUser.id,
+      id,
+      updateTransactionsDto,
+    );
   }
 
   @Delete('id')
