@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { BudgetModule } from './budget/budget.module';
+import { TagModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { BudgetModule } from './budget/budget.module';
     TransactionsModule,
     DashboardModule,
     BudgetModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
